@@ -8,7 +8,7 @@ static int min_width = 300;                /* minimum width when centered */
 
 /* -fn option overrides fonts[0]; default X11 font or font set */
 static const char *fonts[] = {
-	"JetBrains Mono:style=Bold:size=14"
+	"JetBrainsMono Nerd Font:style=Bold:size=12"
 };
 static const char *prompt      = NULL;      /* -p  option; prompt to the left of input field */
 static const char *colors[SchemeLast][2] = {
