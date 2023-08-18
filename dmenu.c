@@ -30,7 +30,7 @@
 
 /* enums */
 enum { SchemeNorm, SchemeSel, SchemeNormHighlight, SchemeSelHighlight,
-       SchemeOut, SchemeCaret, SchemeLast }; /* color schemes */
+       SchemeOut, SchemeCaret, SchemeBorder, SchemeLast }; /* color schemes */
 
 struct item {
 	char *text;
@@ -45,6 +45,9 @@ static char numbers[NUMBERSBUFSIZE] = "";
 static char text[BUFSIZ] = "";
 static char *embed;
 static int bh, mw, mh;
+static int dmx = 0; /* put dmenu at this x offset */
+static int dmy = 0; /* put dmenu at this y offset (measured from the bottom if topbar is 0) */
+static unsigned int dmw = 0; /* make dmenu this wide */
 static int inputw = 0, promptw;
 static int lrpad; /* sum of left and right padding */
 static size_t cursor;
@@ -175,7 +178,7 @@ drawhighlights(struct item *item, int x, int y, int maxw)
 				x + indent - (lrpad / 2),
 				y,
 				MIN(maxw - indent, TEXTW(highlight) - lrpad),
-				bh, 0, highlight, 0
+        bh - 2 * linepadding, 0, highlight, 0
 			);
 			highlight[1] = c;
 			i++;
@@ -195,7 +198,7 @@ drawitem(struct item *item, int x, int y, int w)
 	else
 		drw_setscheme(drw, scheme[SchemeNorm]);
 
-	r = drw_text(drw, x, y, w, bh, lrpad / 2, item->text, 0);
+  r = drw_text(drw, x, y, w, bh - 2 * linepadding, lrpad / 2, item->text, 0);
 	drawhighlights(item, x, y, w);
 	return r;
 }
@@ -226,7 +229,7 @@ drawmenu(void)
 	drw_rect(drw, 0, 0, mw, mh, 1, 1);
 
 	if (prompt && *prompt) {
-		drw_setscheme(drw, scheme[SchemeSel]);
+		drw_setscheme(drw, scheme[SchemeNorm]);
 		x = drw_text(drw, x, 0, promptw, bh, lrpad / 2, prompt, 0);
 	}
 	/* draw input field */
@@ -978,9 +981,9 @@ setup(void)
 			x = info[i].x_org + ((info[i].width  - mw) / 2);
 			y = info[i].y_org + ((info[i].height - mh) / 2);
 		} else {
-			x = info[i].x_org;
-			y = info[i].y_org + (topbar ? 0 : info[i].height - mh);
-			mw = info[i].width;
+		x = info[i].x_org + dmx;
+		y = info[i].y_org + (topbar ? dmy : info[i].height - mh - dmy);
+		mw = (dmw>0 ? dmw : info[i].width);
 		}
 
 		XFree(info);
@@ -995,9 +998,9 @@ setup(void)
 			x = (wa.width  - mw) / 2;
 			y = (wa.height - mh) / 2;
 		} else {
-			x = 0;
-			y = topbar ? 0 : wa.height - mh;
-			mw = wa.width;
+      x = dmx;
+      y = topbar ? dmy : wa.height - mh - dmy;
+      mw = (dmw>0 ? dmw : wa.width);
 		}
 	}
 	inputw = mw / 3; /* input width: ~33% of monitor width */
@@ -1011,7 +1014,7 @@ setup(void)
 	win = XCreateWindow(dpy, parentwin, x, y, mw, mh, border_width,
 	                    CopyFromParent, CopyFromParent, CopyFromParent,
 	                    CWOverrideRedirect | CWBackPixel | CWEventMask, &swa);
-	XSetWindowBorder(dpy, win, scheme[SchemeOut][ColBg].pixel);
+	XSetWindowBorder(dpy, win, scheme[SchemeBorder][ColBg].pixel);
 	XSetClassHint(dpy, win, &ch);
 
 
@@ -1071,6 +1074,12 @@ main(int argc, char *argv[])
 		/* these options take one argument */
 		else if (!strcmp(argv[i], "-l"))   /* number of lines in vertical list */
 			lines = atoi(argv[++i]);
+		else if (!strcmp(argv[i], "-x"))   /* window x offset */
+			dmx = atoi(argv[++i]);
+		else if (!strcmp(argv[i], "-y"))   /* window y offset (from bottom up if -b) */
+			dmy = atoi(argv[++i]);
+		else if (!strcmp(argv[i], "-z"))   /* make dmenu this wide */
+			dmw = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "-h")) { /* minimum height of one menu line */
 			lineheight = atoi(argv[++i]);
 			lineheight = MAX(lineheight, min_lineheight);
