@@ -17,16 +17,15 @@ static const char *colors[SchemeLast][2] = {
   [SchemeSel] =           { "#CDD6F4", "#313244" },
   [SchemeOut] =           { "#181825", "#cba6f7" },
   [SchemeCaret] =         { "#cba6f7", "#313244" },
-  [SchemeSelHighlight] =  { "#fab387", "#585b70" },
-  [SchemeNormHighlight] = { "#89b4fa", "#313244" },
-  [SchemeBorder] =        { "#CDD6F4", "#CDD6F4" },
+  [SchemeSelHighlight] =  { "#cba6f7", "#313244" },
+  [SchemeNormHighlight] = { "#89b4fa", "#181825" },
+  [SchemeBorder] =        { "#CDD6F4", "#181825" },
 };
 /* -l option; if nonzero, dmenu uses vertical list with given number of lines */
 static unsigned int lines      = 18;
 
 /* -h option; minimum height of a menu line */
 static unsigned int lineheight = 38;
-static unsigned int linepadding = 4;
 static unsigned int min_lineheight = 8;
 
 /*
@@ -36,4 +35,4 @@ static unsigned int min_lineheight = 8;
 static const char worddelimiters[] = " ";
 
 /* Size of the window border */
-static const unsigned int border_width = 3;
+static const unsigned int border_width = 16;

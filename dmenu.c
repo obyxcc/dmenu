@@ -178,7 +178,7 @@ drawhighlights(struct item *item, int x, int y, int maxw)
 				x + indent - (lrpad / 2),
 				y,
 				MIN(maxw - indent, TEXTW(highlight) - lrpad),
-        bh - 2 * linepadding, 0, highlight, 0
+        bh, 0, highlight, 0
 			);
 			highlight[1] = c;
 			i++;
@@ -198,7 +198,7 @@ drawitem(struct item *item, int x, int y, int w)
 	else
 		drw_setscheme(drw, scheme[SchemeNorm]);
 
-  r = drw_text(drw, x, y, w, bh - 2 * linepadding, lrpad / 2, item->text, 0);
+  r = drw_text(drw, x, y, w, bh, lrpad / 2, item->text, 0);
 	drawhighlights(item, x, y, w);
 	return r;
 }
